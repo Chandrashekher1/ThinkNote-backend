@@ -1,34 +1,38 @@
 import express from "express";
-import { random } from "./utils";
 import jwt from "jsonwebtoken";
 import { ContentModel, LinkModel, UserModel } from "./db";
+import cors from "cors";
 import { JWT_PASSWORD } from "./config";
 import { userMiddleware } from "./middleware";
-import cors from "cors";
 
 const app = express();
 app.use(express.json());
 app.use(cors());
 
+// @ts-ignore
 app.post("/api/v1/signup", async (req, res) => {
-    const username = req.body.username;
-    const password = req.body.password;
+    const { username, password } = req.body;
+    console.log(`${username} | ${password}`);
+    
 
-    try {
-        await UserModel.create({
-            username: username,
-            password: password
-        }) 
+  try {
+    const existingUser = await UserModel.findOne({ username });
 
-        res.json({
-            message: "User signed up"
-        })
-    } catch(e) {
-        res.status(411).json({
-            message: "User already exists"
-        })
+    if (existingUser) {
+      return res.status(411).json({ message: "User already exists" });
     }
-})
+
+    await UserModel.create({ username, password });
+
+    res.json({ message: "User signed up" });
+  } catch (e) {
+    //@ts-ignore
+    console.error("Signup error:", e.message);
+    res.status(500).json({ message: "Something went wrong" });
+  }
+
+});
+
 
 app.post("/api/v1/signin", async (req, res) => {
     const username = req.body.username;
@@ -60,8 +64,9 @@ app.post("/api/v1/content", userMiddleware, async (req, res) => {
         link,
         type,
         title: req.body.title,
-        //@ts-ignore
-        userId: req.userId, 
+    // @ts-ignore
+        
+        userId: req.userId,
         tags: []
     })
 
@@ -87,7 +92,7 @@ app.delete("/api/v1/content", userMiddleware, async (req, res) => {
 
     await ContentModel.deleteMany({
         contentId,
-        //@ts-ignore
+    // @ts-ignore
 
         userId: req.userId
     })
@@ -101,8 +106,8 @@ app.post("/api/v1/brain/share", userMiddleware, async (req, res) => {
     const share = req.body.share;
     if (share) {
             const existingLink = await LinkModel.findOne({
-                //@ts-ignore
-                
+    // @ts-ignore
+
                 userId: req.userId
             });
 
@@ -112,10 +117,12 @@ app.post("/api/v1/brain/share", userMiddleware, async (req, res) => {
                 })
                 return;
             }
+    // @ts-ignore
+
             const hash = random(10);
             await LinkModel.create({
-        //@ts-ignore
-                
+    // @ts-ignore
+
                 userId: req.userId,
                 hash: hash
             })
@@ -125,7 +132,7 @@ app.post("/api/v1/brain/share", userMiddleware, async (req, res) => {
             })
     } else {
         await LinkModel.deleteOne({
-        //@ts-ignore
+    // @ts-ignore
 
             userId: req.userId
         });
@@ -151,8 +158,6 @@ app.get("/api/v1/brain/:shareLink", async (req, res) => {
     }
     // userId
     const content = await ContentModel.find({
-        
-        //@ts-ignore
         userId: link.userId
     })
 
@@ -175,6 +180,4 @@ app.get("/api/v1/brain/:shareLink", async (req, res) => {
 
 })
 
-app.listen(3000, () => {console.log("Server is running");
-}
-);
+app.listen(3000);

@@ -1,11 +1,9 @@
 import mongoose, {model, Schema} from "mongoose";
 
-mongoose.connect("mongodb://localhost:27017/brainly").then(
-    () => {
-        console.log("Connected to mongodb");
-        
-    }
-)
+mongoose.connect("mongodb://localhost:27017/brainly")
+.catch((err) => console.log(err.message)
+).then(() => {console.log("mongodb connected.");
+})
 
 const UserSchema = new Schema({
     username: {type: String, unique: true},
