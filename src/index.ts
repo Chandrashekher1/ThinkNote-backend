@@ -5,6 +5,7 @@ import cors from "cors";
 import { JWT_PASSWORD } from "./config";
 import { userMiddleware } from "./middleware";
 
+
 const app = express();
 app.use(express.json());
 app.use(cors());
@@ -209,4 +210,6 @@ app.get("/api/v1/brain/:shareLink", async (req, res) => {
 
 })
 
-app.listen(3000);
+app.listen(process.env.PORT,  () => {
+    console.log(`Server is running on port ${process.env.PORT}`)
+});

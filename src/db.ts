@@ -1,6 +1,8 @@
 import mongoose, {model, Schema} from "mongoose";
+import * as dotenv from 'dotenv';
+dotenv.config();
 
-mongoose.connect("mongodb://localhost:27017/brainly")
+mongoose.connect(process.env.MONGO_URI)
 .catch((err) => console.log(err.message)
 ).then(() => {console.log("mongodb connected.");
 })
