@@ -87,20 +87,55 @@ app.get("/api/v1/content", userMiddleware, async (req, res) => {
     })
 })
 
+// @ts-ignore
+app.patch("/api/v1/content", userMiddleware, async (req, res) => {
+    try {
+        const { contentId, updateData } = req.body;
+
+        const content = await ContentModel.findOneAndUpdate(
+        // @ts-ignore
+            { _id: contentId, userId: req.userId },     
+            updateData,
+            { new: true } 
+        );
+
+        if (!content) {
+            return res.status(404).json({ error: "Content not found or not authorized" });
+        }
+
+        res.json({ content });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Something went wrong" });
+    }
+});
+
+// @ts-ignore
 app.delete("/api/v1/content", userMiddleware, async (req, res) => {
-    const contentId = req.body.contentId;
+  const contentId = req.body.contentId;
 
-    await ContentModel.deleteMany({
-        contentId,
-    // @ts-ignore
+  if (!contentId) {
+    return res.status(400).json({ message: "Content ID is required" });
+  }
 
-        userId: req.userId
-    })
+  try {
+    const deletedContent = await ContentModel.findOneAndDelete({
+      _id: contentId,
+      // @ts-ignore
+      userId: req.userId
+    });
 
-    res.json({
-        message: "Deleted"
-    })
-})
+    if (!deletedContent) {
+      return res.status(404).json({ message: "Content not found or unauthorized" });
+    }
+
+    res.json({ message: "Deleted content successfully" });
+  } catch (error) {
+    console.error("Delete error:", error);
+    res.status(500).json({ message: "Server error while deleting content" });
+  }
+});
+
 
 app.post("/api/v1/brain/share", userMiddleware, async (req, res) => {
     const share = req.body.share;
