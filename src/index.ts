@@ -23,7 +23,7 @@ app.post("/api/v1/signup", async (req, res) => {
 
         await UserModel.create({ username, password });
 
-        res.json({ message: "User signed up" });
+        res.json({success: true, message: "User signed up" });
     } catch (e) {
         //@ts-ignore
         console.error("Signup error:", e.message);
