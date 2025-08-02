@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./backend
+        working-directory: ./src
 
     steps:
       - name: Checkout code
@@ -31,8 +31,8 @@ jobs:
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: backend-app
-          path: ./backend
+          name: thinkNote-backend
+          path: ./src
 
   deploy:
     runs-on: ubuntu-latest
