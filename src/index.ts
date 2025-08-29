@@ -5,7 +5,11 @@ import cors from "cors";
 import { JWT_PASSWORD } from "./config";
 import { userMiddleware } from "./middleware"
 import { random } from "./utils";
+import cron from 'node-cron';
 
+cron.schedule('* * * * *', () => {
+  console.log('running a task every minute');
+});
 
 const app = express();
 app.use(express.json());
