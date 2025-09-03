@@ -7,13 +7,14 @@ import { userMiddleware } from "./middleware"
 import { random } from "./utils";
 import cron from 'node-cron';
 
-cron.schedule('* * * * *', () => {
-  console.log('running a task every minute');
-});
 
 const app = express();
 app.use(express.json());
 app.use(cors());
+
+app.get('/', (req, res) => {
+    res.send('Cron schedule active');
+});
 
 // @ts-ignore
 app.post("/api/v1/signup", async (req, res) => {
@@ -59,6 +60,7 @@ app.post("/api/v1/signin", async (req, res) => {
         })
     }
 })
+
 
 
 app.post("/api/v1/content", userMiddleware, async (req, res) => {
