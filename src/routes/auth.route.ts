@@ -20,11 +20,12 @@ router.post("/api/v1/signin", async (req, res) => {
         res.header('Authorization',token).json({
             success: true,
             message: "Login Successful",
+            token,
             data: user
-        })
+        }).status(200)
     }
     catch(err:any){
-        res.status(500).json({success: false, message:"Internal server error", error: err.message})
+        res.status(500).json({success: false, message:err.message, error: err.message})
     }
 })
 
