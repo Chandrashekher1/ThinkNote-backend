@@ -1,1 +1,1 @@
-{"root":["./env.d.ts","./src/config.ts","./src/db.ts","./src/index.ts","./src/middleware.ts","./src/utils.ts"],"version":"5.8.3"}
+{"root":["./src/config.ts","./src/db.ts","./src/env.d.ts","./src/index.ts","./src/middleware.ts","./src/utils.ts","./src/models/content.model.ts","./src/models/link.model.ts","./src/models/user.model.ts","./src/routes/auth.route.ts","./src/routes/content.route.ts","./src/routes/link.route.ts","./src/routes/user.route.ts","./src/startup/route.ts"],"version":"5.8.3"}
