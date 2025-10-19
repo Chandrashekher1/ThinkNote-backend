@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
 import Joi from "joi"
 import jwt from "jsonwebtoken"
+import * as dotenv from "dotenv"
+dotenv.config();
 
 const userSchema = new mongoose.Schema({
     username: {
