@@ -1,24 +1,22 @@
 import { NextFunction, Request, Response } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { JWT_PASSWORD } from "./config";
+import * as dotenv from "dotenv"
+dotenv.config();
 
-export const userMiddleware = (req: Request, res: Response, next: NextFunction) => {
-    const header = req.headers["authorization"];
-    const decoded = jwt.verify(header as string, JWT_PASSWORD)
-    if (decoded) {
-        if (typeof decoded === "string") {
-            res.status(403).json({
-                message: "You are not logged in"
-            })
-            return;    
+export function auth(req: Request, res: Response, next: NextFunction) {
+    const token = req.header('Authorization') // for authorization
+    if(!token) return res.status(401).send("Access denied. No token provided.")
+    try{
+        const jwtPrivateKey = process.env.jwtPrivateKey;
+        if (!jwtPrivateKey) {
+            return res.status(500).send('JWT private key is not configured');
         }
-         // @ts-ignore
-
-        req.userId = (decoded as JwtPayload).id;
+        const decoded = jwt.verify(token, jwtPrivateKey)
+        // @ts-ignore
+        req.userId = decoded._id
         next()
-    } else {
-        res.status(403).json({
-            message: "You are not logged in"
-        })
+    }
+    catch(err){
+        res.status(400).send('Invalid token.')
     }
 }
