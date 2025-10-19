@@ -7,9 +7,10 @@ const router = express.Router()
 router.get('/api/v1/content',auth, async(req,res) => {
     try{
         const userId = req.userId;
+        console.log("Fetching content for user:", userId);
         const content = await ContentModel.find({
-            userId: userId
-        }).populate("userId", "username")
+            author: userId
+        }).populate("author", "username")
         res.json({success: true, data: content})
     } catch (error : any) {
         console.error("Error fetching content:", error);
@@ -22,14 +23,14 @@ router.post('/api/v1/content',auth, async(req,res) => {
     try{
         const {link, type, title, content} = req.body;
         const userId = req.userId;
-
         await ContentModel.create({
             link,
             type,
             title,
             content,
-            userId
+            author : userId
         })
+        res.status(200).json({success: true, message: "Content created successfully"})
     } catch (error: any) {
         console.error("Error creating content:", error);
         res.status(500).json({ success: false, message: "Internal server error", error: error.message });
