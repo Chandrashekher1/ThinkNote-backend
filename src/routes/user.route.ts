@@ -8,10 +8,10 @@ const router = express.Router()
 router.post('/api/v1/signup', async(req,res) => {
     try{
         const {error} = validateUser(req.body.username, req.body.password)
+        console.log(req.body);
         if (error){
             return res.status(400).send({message: error.details[0].message})
         }
-
         let user = await UserModel.findOne({username: req.body.username})
         if(user) return res.status(400).json({success: false, message: "username already exists"})
         
@@ -19,7 +19,6 @@ router.post('/api/v1/signup', async(req,res) => {
             username: req.body.username,
             password: req.body.password
         })
-
         const salt = await bcrypt.genSalt(10)
         user.password = await bcrypt.hash(req.body.password, salt)
         user = await user.save()

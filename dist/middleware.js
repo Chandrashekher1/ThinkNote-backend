@@ -1,29 +1,60 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.userMiddleware = void 0;
+exports.auth = auth;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const config_1 = require("./config");
-const userMiddleware = (req, res, next) => {
-    const header = req.headers["authorization"];
-    const decoded = jsonwebtoken_1.default.verify(header, config_1.JWT_PASSWORD);
-    if (decoded) {
-        if (typeof decoded === "string") {
-            res.status(403).json({
-                message: "You are not logged in"
-            });
-            return;
+const dotenv = __importStar(require("dotenv"));
+dotenv.config();
+function auth(req, res, next) {
+    const token = req.header('Authorization'); // for authorization
+    if (!token)
+        return res.status(401).send("Access denied. No token provided.");
+    try {
+        const jwtPrivateKey = process.env.jwtPrivateKey;
+        if (!jwtPrivateKey) {
+            return res.status(500).send('JWT private key is not configured');
         }
+        const decoded = jsonwebtoken_1.default.verify(token, jwtPrivateKey);
         // @ts-ignore
-        req.userId = decoded.id;
+        req.userId = decoded._id;
         next();
     }
-    else {
-        res.status(403).json({
-            message: "You are not logged in"
-        });
+    catch (err) {
+        res.status(400).send('Invalid token.');
     }
-};
-exports.userMiddleware = userMiddleware;
+}

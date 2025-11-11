@@ -3,11 +3,12 @@ import { LinkModel } from "../models/link.model";
 import { ContentModel } from "../models/content.model";
 import { UserModel } from "../models/user.model";
 import { auth } from "../middleware";
+import { random } from "../utils";
 
 const router = express.Router()
 
 // @ts-ignore
-router.get("/api/v1/brain/:shareLink", auth, async (req, res) => {
+router.get("/api/v1/brain/:shareLink", async (req, res) => {
     const hash = req.params.shareLink;
     const link = await LinkModel.findOne({
         hash
@@ -21,9 +22,8 @@ router.get("/api/v1/brain/:shareLink", auth, async (req, res) => {
     }
     // userId
     const content = await ContentModel.find({
-        userId: link.userId
+        author: link.userId
     })
-
     const user = await UserModel.findOne({
         _id: link.userId
     })
@@ -62,7 +62,7 @@ router.post("/api/v1/brain/share", auth, async (req, res) => {
       }
 
       // @ts-ignore
-      await LinkModel.deleteOne({ userId: req.userId });
+      await LinkModel.deleteOne({ author: req.userId });
       return res.json({ message: "Removed link" });
     }
 

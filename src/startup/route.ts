@@ -12,5 +12,4 @@ export default function(app: Application){
     app.use('/content', content)
     app.use('/link', link)
     app.use('/login', login)
-
 }

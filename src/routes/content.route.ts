@@ -38,41 +38,38 @@ router.post('/api/v1/content',auth, async(req,res) => {
 })
 
 // @ts-ignore
-router.patch("/api/v1/content", auth, async (req, res) => {
+router.patch("/api/v1/content/:id", auth, async (req, res) => {
     try {
-        const { contentId, updateData } = req.body;
+        const {updateData } = req.body;
+        const contentId = req.params.id
 
         const content = await ContentModel.findOneAndUpdate(
         // @ts-ignore
-            { _id: contentId, userId: req.userId },     
+            { _id: contentId, author: req.userId },     
             updateData,
             { new: true } 
         );
-
         if (!content) {
-            return res.status(404).json({ error: "Content not found or not authorized" });
+            return res.status(404).json({message:"Content not found or not authorized" });
         }
-
         res.json({ content });
-    } catch (err) {
+    } catch (err:any) {
         console.error(err);
-        res.status(500).json({ error: "Something went wrong" });
+        res.status(500).json({ error: err.message , message: "Something went wrong" });
     }
 });
 
 // @ts-ignore
-router.delete("/api/v1/content", auth, async (req, res) => {
-  const contentId = req.body.contentId;
-
+router.delete("/api/v1/content/:id", auth, async (req, res) => {
+  const contentId = req.params.id
   if (!contentId) {
     return res.status(400).json({ message: "Content ID is required" });
   }
-
   try {
     const deletedContent = await ContentModel.findOneAndDelete({
       _id: contentId,
       // @ts-ignore
-      userId: req.userId
+      author: req.userId
     });
 
     if (!deletedContent) {

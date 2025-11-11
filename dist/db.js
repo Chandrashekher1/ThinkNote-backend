@@ -32,27 +32,15 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ContentModel = exports.LinkModel = exports.UserModel = void 0;
-const mongoose_1 = __importStar(require("mongoose"));
-mongoose_1.default.connect("mongodb://localhost:27017/brainly").then(() => {
-    console.log("Connected to mongodb");
+const mongoose_1 = __importDefault(require("mongoose"));
+const dotenv = __importStar(require("dotenv"));
+dotenv.config();
+const db = mongoose_1.default.connect(process.env.MONGO_URI)
+    .catch((err) => console.log(err.message)).then(() => {
+    console.log("mongodb connected.");
 });
-const UserSchema = new mongoose_1.Schema({
-    username: { type: String, unique: true },
-    password: String
-});
-exports.UserModel = (0, mongoose_1.model)("User", UserSchema);
-const ContentSchema = new mongoose_1.Schema({
-    title: String,
-    link: String,
-    tags: [{ type: mongoose_1.default.Types.ObjectId, ref: 'Tag' }],
-    type: String,
-    userId: { type: mongoose_1.default.Types.ObjectId, ref: 'User', required: true },
-});
-const LinkSchema = new mongoose_1.Schema({
-    hash: String,
-    userId: { type: mongoose_1.default.Types.ObjectId, ref: 'User', required: true, unique: true },
-});
-exports.LinkModel = (0, mongoose_1.model)("Links", LinkSchema);
-exports.ContentModel = (0, mongoose_1.model)("Content", ContentSchema);
+exports.default = db;
