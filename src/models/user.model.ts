@@ -19,7 +19,7 @@ const userSchema = new mongoose.Schema({
 })
 
 userSchema.methods.generateAuthToken = function(){
-    const jwtPrivatekey = process.env.jwtPrivatekey
+    const jwtPrivatekey = process.env.jwtPrivateKey
     if(!jwtPrivatekey){
         throw new Error("JWT Private Key is not defined")
     }
