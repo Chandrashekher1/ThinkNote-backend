@@ -5,6 +5,12 @@ import bcrypt from "bcrypt"
 const router = express.Router()
 
 // @ts-ignore
+
+router.get('/timer', async(req,res) => {
+    res.send("Timer is activated.")
+})
+
+//@ts-ignore
 router.post('/api/v1/signup', async(req,res) => {
     try{
         const {error} = validateUser(req.body.username, req.body.password)
